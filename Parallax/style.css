@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Pangolin&display=swap');
+
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Pangolin', cursive;
+    font-size: 1em;
+    background-color: #EEEFF7;
+    color: #1C1D21;
+}
+
+.banner1,
+.banner2,
+.banner3 {
+    position: relative;
+    opacity: .7;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.banner1 {
+    background-image: url(./1.jpg);
+    min-height: 100%;
+}
+
+.banner2 {
+    background-image: url(./2.jpg);
+    min-height: 400px;
+}
+
+.banner3 {
+    background-image: url(./3.jpg);
+    min-height: 400px;
+}
+
+section{
+    text-align: center;
+    padding: 1rem;
+}
+
+.section1{
+    background-color: #F2F2F3;
+    color: #A2D7E3;
+}
+
+
+
+.section2, .section3{
+    background-color: #C0DDF2;
+    color: #F2F2F3;
+}
+
+.text{
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    font-size: 27px;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+}
+.border{
+    color: #0157B4;
+    padding: 20px;
+    background-color: black;
+}
+
+
+  
+@media(max-width:1000px){
+    .banner1, .banner2, .banner3{
+        background-attachment: scroll;
+    }
+}

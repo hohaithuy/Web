@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arvo&family=Dancing+Script&family=Playfair+Display:wght@500&display=swap');
+body {
+    background: linear-gradient(to bottom, #F2EFE8 75%, #37383A 25%);
+    margin: 0;
+    border: 0;
+    font-size: 16px;
+}
+
+
+
+
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    padding: 2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: large;
+}
+.header{
+    display: flex;
+    font-size: .9rem;
+}
+
+.header p:last-child{
+    margin-left: auto;
+}
+.title >p{
+    font-family: 'Playfair Display', serif;
+    font-size: 7rem;
+    display: flex;
+    font-weight: normal;
+    letter-spacing: .5rem;
+    padding: 1rem 0;
+    margin: 0;
+}
+
+.by{
+    display: grid;
+    font-size: .4rem;
+    padding: 2rem 0;
+    grid-template-columns: 1fr 1fr;
+}
+
+.supporter{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.instruction{
+    margin-left: auto;
+    margin-right: auto;
+    border: black .5rem solid;
+    border-radius: 1rem;
+    border-width: 0.5rem;
+    background-image: url("./test.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 50rem;
+}
+
+.content p{
+    padding-bottom: 8rem !important;
+}
