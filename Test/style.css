@@ -1,0 +1,17 @@
+:root{
+    -swiper-navigation-size: 44px;
+}
+.poster{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    
+}
+
+.fullscreen{
+    position: fixed;
+    z-index: -10;
+}
