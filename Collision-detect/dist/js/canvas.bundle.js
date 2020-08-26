@@ -90,19 +90,14 @@
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
   \**************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_0__);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
@@ -125,15 +120,18 @@ addEventListener('resize', function () {
 }); // Objects
 
 var Circle = /*#__PURE__*/function () {
-  function Circle(x, y, radius, color) {
+  function Circle(x, y, radius) {
     _classCallCheck(this, Circle);
 
     this.x = x;
     this.y = y;
-    this.dx = 10;
-    this.dy = 10;
+    this.mass = 1;
+    this.velocity = {
+      x: Math.random() - 0.5,
+      y: Math.random() - 0.5
+    };
     this.radius = radius;
-    this.color = color;
+    this.color = colors[Math.floor(Math.random() * colors.length)];
   }
 
   _createClass(Circle, [{
@@ -141,8 +139,8 @@ var Circle = /*#__PURE__*/function () {
     value: function draw() {
       c.beginPath();
       c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-      c.fillStyle = this.color;
-      c.fill();
+      c.strokeStyle = this.color;
+      c.stroke();
       c.closePath();
     }
   }, {
@@ -150,16 +148,24 @@ var Circle = /*#__PURE__*/function () {
     value: function update() {
       this.draw();
 
+      for (var i = 0; i < circleArray.length; i++) {
+        if (this == circleArray[i]) continue;
+
+        if (getDistance(this.x, this.y, circleArray[i].x, circleArray[i].y) < this.radius * 2) {
+          resolveCollision(this, circleArray[i]);
+        }
+      }
+
       if (this.x + this.radius > window.innerWidth || this.x - this.radius < 0) {
-        this.dx = -this.dx;
+        this.velocity.x = -this.velocity.x;
       }
 
       if (this.y + this.radius > window.innerHeight || this.y < this.radius) {
-        this.dy = -this.dy;
+        this.velocity.y = -this.velocity.y;
       }
 
-      this.x += this.dx;
-      this.y += this.dy;
+      this.x += this.velocity.x;
+      this.y += this.velocity.y;
     }
   }]);
 
@@ -170,17 +176,76 @@ function getDistance(x1, y1, x2, y2) {
   var xDistance = x2 - x1;
   var yDistance = y2 - y1;
   return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+}
+
+function rotate(velocity, angle) {
+  var rotatedVelocities = {
+    x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
+    y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)
+  };
+  return rotatedVelocities;
+}
+
+function resolveCollision(particle, otherParticle) {
+  var xVelocityDiff = particle.velocity.x - otherParticle.velocity.x;
+  var yVelocityDiff = particle.velocity.y - otherParticle.velocity.y;
+  var xDist = otherParticle.x - particle.x;
+  var yDist = otherParticle.y - particle.y; // Prevent accidental overlap of particles
+
+  if (xVelocityDiff * xDist + yVelocityDiff * yDist >= 0) {
+    // Grab angle between the two colliding particles
+    var angle = -Math.atan2(otherParticle.y - particle.y, otherParticle.x - particle.x); // Store mass in var for better readability in collision equation
+
+    var m1 = particle.mass;
+    var m2 = otherParticle.mass; // Velocity before equation
+
+    var u1 = rotate(particle.velocity, angle);
+    var u2 = rotate(otherParticle.velocity, angle); // Velocity after 1d collision equation
+
+    var v1 = {
+      x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2),
+      y: u1.y
+    };
+    var v2 = {
+      x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2),
+      y: u2.y
+    }; // Final velocity after rotating axis back to original location
+
+    var vFinal1 = rotate(v1, -angle);
+    var vFinal2 = rotate(v2, -angle); // Swap particle velocities for realistic bounce effect
+
+    particle.velocity.x = vFinal1.x;
+    particle.velocity.y = vFinal1.y;
+    otherParticle.velocity.x = vFinal2.x;
+    otherParticle.velocity.y = vFinal2.y;
+  }
 } // ==============================================================================================================
 
 
-var circle1;
-var circle2;
-var inCircle = 0;
-var outCircle = 0;
+var circleArray = [];
 
 function init() {
-  circle1 = new Circle(200, 300, 60, '#2185C5');
-  circle2 = new Circle(400, 500, 80, 'black');
+  circleArray = [];
+
+  for (var i = 0; i < 6; i++) {
+    var radius = 80;
+    var x = Math.random() * (window.innerWidth - radius * 2) + radius;
+    var y = Math.random() * (window.innerHeight - radius * 2) + radius;
+
+    if (i != 0) {
+      for (var j = 0; j < circleArray.length; j++) {
+        if (getDistance(x, y, circleArray[j].x, circleArray[j].y) < radius * 2) {
+          var _x = Math.random() * (window.innerWidth - radius * 2) + radius;
+
+          var _y = Math.random() * (window.innerHeight - radius * 2) + radius;
+
+          j = -1;
+        }
+      }
+    }
+
+    circleArray.push(new Circle(x, y, radius));
+  }
 } // Animation Loop
 
 
@@ -188,66 +253,13 @@ function animate() {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (getDistance(circle1.x, circle1.y, circle2.x, circle2.y) < circle1.radius + circle2.radius) {
-    if (circle1.dx / circle2.dx < 0) {
-      circle1.dx = -circle1.dx;
-      circle2.dx = -circle2.dx;
-    } else {
-      circle1.dx = -circle1.dx;
-    }
-
-    if (circle1.dy / circle2.dy < 0) {
-      circle1.dy = -circle1.dy;
-      circle2.dy = -circle2.dy;
-    } else {
-      circle1.dy = -circle1.dy;
-    }
-
-    if (outCircle == 1) inCircle = 1;
-  } else {
-    outCircle = 1;
+  for (var i = 0; i < circleArray.length; i++) {
+    circleArray[i].update();
   }
-
-  if (inCircle == 1 && outCircle == 1) {
-    circle2.color = colors[Math.floor(Math.random() * colors.length)];
-    inCircle = 0;
-    outCircle = 0;
-  }
-
-  circle1.update(); //	circle2.update();
 }
 
 init();
 animate();
-
-/***/ }),
-
-/***/ "./src/js/utils.js":
-/*!*************************!*\
-  !*** ./src/js/utils.js ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function randomIntFromRange(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function randomColor(colors) {
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-function distance(x1, y1, x2, y2) {
-  var xDist = x2 - x1;
-  var yDist = y2 - y1;
-  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
-}
-
-module.exports = {
-  randomIntFromRange: randomIntFromRange,
-  randomColor: randomColor,
-  distance: distance
-};
 
 /***/ })
 
