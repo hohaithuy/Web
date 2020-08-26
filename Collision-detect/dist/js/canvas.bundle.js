@@ -112,7 +112,7 @@ var mouse = {
   x: innerWidth / 2,
   y: innerHeight / 2
 };
-var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66']; // Event Listeners
+var colors = ['#F27781', '#18298C', '#04BF8A', '#F2CF1D', '#F29F05', '#F23827', '#050259', '#6204BF', '#7C05F2', '#F205CB']; // Event Listeners
 
 addEventListener('mousemove', function (event) {
   mouse.x = event.clientX;
@@ -124,17 +124,19 @@ addEventListener('resize', function () {
   init();
 }); // Objects
 
-var _Object = /*#__PURE__*/function () {
-  function Object(x, y, radius, color) {
-    _classCallCheck(this, Object);
+var Circle = /*#__PURE__*/function () {
+  function Circle(x, y, radius, color) {
+    _classCallCheck(this, Circle);
 
     this.x = x;
     this.y = y;
+    this.dx = 10;
+    this.dy = 10;
     this.radius = radius;
     this.color = color;
   }
 
-  _createClass(Object, [{
+  _createClass(Circle, [{
     key: "draw",
     value: function draw() {
       c.beginPath();
@@ -147,29 +149,72 @@ var _Object = /*#__PURE__*/function () {
     key: "update",
     value: function update() {
       this.draw();
+
+      if (this.x + this.radius > window.innerWidth || this.x - this.radius < 0) {
+        this.dx = -this.dx;
+      }
+
+      if (this.y + this.radius > window.innerHeight || this.y < this.radius) {
+        this.dy = -this.dy;
+      }
+
+      this.x += this.dx;
+      this.y += this.dy;
     }
   }]);
 
-  return Object;
-}(); // Implementation
+  return Circle;
+}();
+
+function getDistance(x1, y1, x2, y2) {
+  var xDistance = x2 - x1;
+  var yDistance = y2 - y1;
+  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+} // ==============================================================================================================
 
 
-var objects;
+var circle1;
+var circle2;
+var inCircle = 0;
+var outCircle = 0;
 
 function init() {
-  objects = [];
-
-  for (var i = 0; i < 400; i++) {// objects.push()
-  }
+  circle1 = new Circle(200, 300, 60, '#2185C5');
+  circle2 = new Circle(400, 500, 80, 'black');
 } // Animation Loop
 
 
 function animate() {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
-  c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y); // objects.forEach(object => {
-  //  object.update()
-  // })
+
+  if (getDistance(circle1.x, circle1.y, circle2.x, circle2.y) < circle1.radius + circle2.radius) {
+    if (circle1.dx / circle2.dx < 0) {
+      circle1.dx = -circle1.dx;
+      circle2.dx = -circle2.dx;
+    } else {
+      circle1.dx = -circle1.dx;
+    }
+
+    if (circle1.dy / circle2.dy < 0) {
+      circle1.dy = -circle1.dy;
+      circle2.dy = -circle2.dy;
+    } else {
+      circle1.dy = -circle1.dy;
+    }
+
+    if (outCircle == 1) inCircle = 1;
+  } else {
+    outCircle = 1;
+  }
+
+  if (inCircle == 1 && outCircle == 1) {
+    circle2.color = colors[Math.floor(Math.random() * colors.length)];
+    inCircle = 0;
+    outCircle = 0;
+  }
+
+  circle1.update(); //	circle2.update();
 }
 
 init();
