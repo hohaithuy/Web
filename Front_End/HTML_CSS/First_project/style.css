@@ -63,3 +63,41 @@ body {
 .content p{
     padding-bottom: 8rem !important;
 }
+
+@media(max-width:1000px){
+    .header{
+        display: flex;
+        font-size: .7rem;
+    }
+    
+    .title >p{
+        font-family: 'Playfair Display', serif;
+        font-size: 4rem;
+        display: flex;
+        font-weight: normal;
+        letter-spacing: .5rem;
+        padding: 1rem 0;
+        margin: 0;
+    }
+    
+    .by{
+        display: grid;
+        font-size: .2rem;
+        padding: 2rem 0;
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .instruction{
+        margin-left: auto;
+        margin-right: auto;
+        border: black .5rem solid;
+        border-radius: 1rem;
+        border-width: 0.5rem;
+        background-image: url("./test.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 20rem;
+    }
+
+}
+
